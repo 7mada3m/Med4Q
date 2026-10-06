@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Drag the Car</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: #222;
+        overflow: hidden;
+        touch-action: none;
+        font-family: Arial, sans-serif;
+    }
+
+    #game {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        background:
+            linear-gradient(#4caf50, #4caf50);
+        overflow: hidden;
+    }
+
+    /* Road */
+    #road {
+        position: absolute;
+        width: 70%;
+        height: 45%;
+        left: 15%;
+        top: 27%;
+        background: #444;
+        border: 5px solid #ddd;
+        border-radius: 20px;
+    }
+
+    /* Car */
+    #car {
+        position: absolute;
+        width: 90px;
+        height: 50px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        z-index: 10;
+    }
+
+    #car:active {
+        cursor: grabbing;
+    }
+
+    .body {
+        position: absolute;
+        width: 90px;
+        height: 38px;
+        top: 8px;
+        background: #e53935;
+        border: 3px solid #222;
+        border-radius: 12px;
+    }
+
+    .roof {
+        position: absolute;
+        width: 48px;
+        height: 25px;
+        left: 21px;
+        top: 0;
+        background: #e53935;
+        border: 3px solid #222;
+        border-bottom: none;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .window {
+        position: absolute;
+        width: 36px;
+        height: 16px;
+        left: 27px;
+        top: 5px;
+        background: #8bd3ff;
+        border: 2px solid #222;
+        border-radius: 5px;
+    }
+
+    .wheel {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        background: #111;
+        border: 3px solid #777;
+        border-radius: 50%;
+        top: 28px;
+    }
+
+    .wheel.left {
+        left: 10px;
+    }
+
+    .wheel.right {
+        right: 10px;
+    }
+
+    #instructions {
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #000b;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 10px;
+        z-index: 20;
+        text-align: center;
+        font-size: 16px;
+    }
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div id="instructions">
+        🚗 Drag the car with your finger
+    </div>
+
+    <div id="road"></div>
+
+    <div id="car">
+        <div class="roof"></div>
+        <div class="window"></div>
+        <div class="body"></div>
+
+        <div class="wheel left"></div>
+        <div class="wheel right"></div>
+    </div>
+
+</div>
+
+<script>
+
+const car = document.getElementById("car");
+const game = document.getElementById("game");
+
+let dragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+car.addEventListener("pointerdown", function(event) {
+
+    dragging = true;
+
+    const rect = car.getBoundingClientRect();
+
+    offsetX = event.clientX - rect.left;
+    offsetY = event.clientY - rect.top;
+
+    car.setPointerCapture(event.pointerId);
+});
+
+car.addEventListener("pointermove", function(event) {
+
+    if (!dragging) return;
+
+    const gameRect = game.getBoundingClientRect();
+
+    let x = event.clientX - gameRect.left - offsetX;
+    let y = event.clientY - gameRect.top - offsetY;
+
+    // Keep the car inside the screen
+    x = Math.max(0, Math.min(
+        gameRect.width - car.offsetWidth,
+        x
+    ));
+
+    y = Math.max(0, Math.min(
+        gameRect.height - car.offsetHeight,
+        y
+    ));
+
+    car.style.left = x + "px";
+    car.style.top = y + "px";
+    car.style.transform = "none";
+});
+
+car.addEventListener("pointerup", function() {
+    dragging = false;
+});
+
+car.addEventListener("pointercancel", function() {
+    dragging = false;
+});
+
+</script>
+
+</body>
+</html>
