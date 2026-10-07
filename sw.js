@@ -1,7 +1,7 @@
 "use strict";
 
 // Increment VERSION whenever the HTML, CSS, JS, manifest, or icons change.
-const VERSION = "v1";
+const VERSION = "v2";
 const BASE = new URL(self.registration.scope);
 const PREFIX = `mid4q-shell:${BASE.pathname}:`;
 const CACHE = PREFIX + VERSION;
