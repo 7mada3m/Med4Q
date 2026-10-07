@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!--
+    Content Security Policy: all code is self-hosted; only Google Drive may be
+    framed (the /preview player). Thumbnails may come from any HTTPS host.
+    If you ever move catalog.json to another origin, add it to connect-src.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data: blob:; frame-src https://drive.google.com https://docs.google.com; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>mid4Q · Medical Lecture Library</title>
+  <meta name="description" content="mid4Q: stream and download medical lecture videos. Instant fuzzy search, built for phones, tablets and desktops, installable as an app.">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="color-scheme" content="dark">
+  <meta name="application-name" content="mid4Q">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="mid4Q">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="mid4Q">
+  <meta property="og:title" content="mid4Q · Medical Lecture Library">
+  <meta property="og:description" content="Stream and download medical lecture videos.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://drive.google.com">
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to lectures</a>
+
+  <!-- Icon sprite (referenced with <use href="#i-…">) -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M8 5.6v12.8a1.1 1.1 0 0 0 1.68.94l10.2-6.4a1.1 1.1 0 0 0 0-1.88L9.68 4.66A1.1 1.1 0 0 0 8 5.6Z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></symbol>
+    <symbol id="i-install" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-search-x" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/><path d="m8.8 8.8 4.4 4.4m0-4.4-4.4 4.4"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M10 9.2v5.6l4.8-2.8Z"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 13h5l1.5 3h5l1.5-3h5"/><path d="M5.4 5.6 3 13v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5l-2.4-7.4A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.9 1.6Z"/></symbol>
+  </svg>
+
+  <header class="topbar" id="topbar">
+    <div class="topbar__inner container">
+      <a class="brand" href="./" aria-label="mid4Q, all lectures">
+        <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="brand-gradient" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#2dd4bf"/>
+              <stop offset="1" stop-color="#0ea5e9"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="16" fill="url(#brand-gradient)"/>
+          <path d="M25 19.5v25a2 2 0 0 0 3 1.7l20-12.5a2 2 0 0 0 0-3.4l-20-12.5a2 2 0 0 0-3 1.7Z" fill="#06231f"/>
+          <path d="M46 11v8M42 15h8" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand__name" aria-hidden="true">mid<span class="brand__accent">4</span>Q</span>
+      </a>
+
+      <form class="search" id="search-form" role="search" autocomplete="off">
+        <label class="visually-hidden" for="search-input">Search lectures</label>
+        <svg class="icon search__icon" aria-hidden="true" focusable="false"><use href="#i-search"/></svg>
+        <input class="search__input" id="search-input" type="search" name="q" dir="auto"
+               placeholder="Search lectures…" maxlength="120"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               enterkeyhint="search" aria-controls="grid">
+        <kbd class="search__kbd" aria-hidden="true">/</kbd>
+        <button class="search__clear" id="search-clear" type="button" aria-label="Clear search" hidden>
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"/></svg>
+        </button>
+      </form>
+
+      <div class="topbar__actions">
+        <button class="btn btn--ghost btn--compact" id="install-btn" type="button" hidden>
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-install"/></svg>
+          <span>Install</span>
+        </button>
+        <button class="icon-btn refresh-btn" id="refresh-btn" type="button" aria-label="Refresh lecture list" title="Refresh lecture list">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-refresh"/></svg>
+          <span class="refresh-btn__label" aria-hidden="true">Refresh</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Pull-to-refresh indicator (touch devices) -->
+  <div class="ptr" id="ptr" aria-hidden="true">
+    <div class="ptr__bubble">
+      <svg class="icon ptr__icon" focusable="false"><use href="#i-refresh"/></svg>
+    </div>
+  </div>
+
+  <main class="main container" id="main" tabindex="-1">
+    <div class="toolbar">
+      <h1 class="toolbar__title" id="results-title">All lectures</h1>
+      <p class="toolbar__meta" id="results-meta">Loading lectures…</p>
+    </div>
+
+    <noscript>
+      <p class="noscript">mid4Q needs JavaScript to load the lecture catalog.</p>
+    </noscript>
+
+    <ul class="grid" id="grid" role="list" aria-labelledby="results-title" aria-busy="true">
+      <!-- Skeleton placeholders: replaced as soon as catalog.json arrives -->
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+      <li class="card card--skeleton" aria-hidden="true"><div class="card__thumb"></div><div class="card__body"><span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line skeleton-line--short"></span></div></li>
+    </ul>
+
+    <!-- Infinite-scroll sentinel: the next batch of cards renders when this nears the viewport -->
+    <div class="sentinel" id="sentinel" aria-hidden="true" hidden></div>
+
+    <section class="state" id="empty-state" aria-labelledby="empty-title" hidden>
+      <div class="state__icon">
+        <svg class="icon" aria-hidden="true" focusable="false"><use id="empty-icon" href="#i-search-x"/></svg>
+      </div>
+      <h2 class="state__title" id="empty-title">No lectures found</h2>
+      <p class="state__text" id="empty-text">Try different keywords.</p>
+      <button class="btn btn--primary" id="empty-action" type="button">Clear search</button>
+    </section>
+
+    <section class="state state--error" id="error-state" aria-labelledby="error-title" hidden>
+      <div class="state__icon">
+        <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-alert"/></svg>
+      </div>
+      <h2 class="state__title" id="error-title">Couldn’t load lectures</h2>
+      <p class="state__text" id="error-text">Check your connection and try again.</p>
+      <button class="btn btn--primary" id="retry-btn" type="button">
+        <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-refresh"/></svg>
+        <span>Try again</span>
+      </button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner container">
+      <p>mid4Q · Lectures stream from Google Drive</p>
+      <p class="footer__keys"><kbd>/</kbd> search <span aria-hidden="true">·</span> <kbd>Esc</kbd> close player</p>
+    </div>
+  </footer>
+
+  <!-- Screen-reader announcements + toast notifications -->
+  <p class="visually-hidden" id="live-region" aria-live="polite" aria-atomic="true"></p>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <!-- Video player modal -->
+  <dialog class="player" id="player" aria-labelledby="player-title">
+    <div class="player__panel">
+      <div class="player__header">
+        <div class="player__heading">
+          <p class="player__eyebrow" id="player-eyebrow" dir="auto" hidden></p>
+          <h2 class="player__title" id="player-title" dir="auto">Lecture</h2>
+        </div>
+        <button class="icon-btn player__close" id="player-close" type="button" aria-label="Close video (Esc)" title="Close (Esc)">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"/></svg>
+        </button>
+      </div>
+
+      <div class="player__frame" id="player-frame">
+        <div class="player__loading" aria-hidden="true">
+          <span class="spinner"></span>
+          <span>Loading video…</span>
+        </div>
+        <!-- The Google Drive /preview iframe is injected here on open and removed on close -->
+      </div>
+
+      <p class="player__offline" id="player-offline" hidden>You’re offline. The video will stream once you reconnect.</p>
+
+      <div class="player__actions">
+        <a class="btn btn--primary" id="player-download" href="#" target="_blank" rel="noopener noreferrer">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-download"/></svg>
+          <span>Download</span>
+        </a>
+        <a class="btn btn--ghost" id="player-drive" href="#" target="_blank" rel="noopener noreferrer">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-external"/></svg>
+          <span>Open in Drive</span>
+        </a>
+        <button class="btn btn--ghost" id="player-share" type="button">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-link"/></svg>
+          <span id="player-share-label">Copy link</span>
+        </button>
+      </div>
+      <p class="player__hint">Files over 100&nbsp;MB open Google’s virus-scan notice first. Choose <strong>Download anyway</strong>.</p>
+    </div>
+    <div class="toasts toasts--player" id="player-toasts" aria-live="polite"></div>
+  </dialog>
+
+  <template id="card-template">
+    <li class="card">
+      <a class="card__link" href="#">
+        <div class="card__thumb">
+          <img class="card__img" alt="" width="640" height="360" decoding="async" referrerpolicy="no-referrer">
+          <div class="card__fallback" aria-hidden="true">
+            <svg class="icon" focusable="false"><use href="#i-film"/></svg>
+          </div>
+          <span class="card__play" aria-hidden="true">
+            <svg class="icon" focusable="false"><use href="#i-play"/></svg>
+          </span>
+        </div>
+        <div class="card__body">
+          <p class="card__eyebrow" dir="auto"></p>
+          <h2 class="card__title" dir="auto"></h2>
+        </div>
+      </a>
+    </li>
+  </template>
+</body>
+</html>
